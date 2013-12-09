@@ -6,7 +6,7 @@ platforms:
 <% %w(11.6.0 11.4.4 10.26.0).each do |chef_version| %>
 - name: ubuntu-12.04-<%= chef_version %>-elasticsearch
   driver_config:
-    box: opscode_ubuntu-12.04
+    box: opscode-ubuntu-12.04
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
     require_chef_omnibus: <%= chef_version %>
   run_list:
@@ -20,7 +20,7 @@ platforms:
   - recipe[apt]
 - name: debian-7.1.0-<%= chef_version %>-elasticsearch
   driver_config:
-    box: opscode_debian-7.1.0
+    box: opscode-debian-7.1.0
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_debian-7.1.0_provisionerless.box
     require_chef_omnibus: <%= chef_version %>
   run_list:
