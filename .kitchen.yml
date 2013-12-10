@@ -45,6 +45,9 @@ suites:
 - name: instance
   run_list:
   - recipe[es_test::instance]
+- name: instance_runit
+  run_list:
+  - recipe[es_test::instance_runit]
 - name: config
   run_list:
   - recipe[es_test::config]
