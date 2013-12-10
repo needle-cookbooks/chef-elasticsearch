@@ -6,7 +6,7 @@ group :test do
   gem 'flog'
   gem 'rake'
   gem 'reek', '>= 1.3.1'
-  gem 'test-kitchen', git: 'git://github.com/opscode/test-kitchen.git', branch: 'master'
+  gem 'test-kitchen', '~> 1.1.0'
   gem 'busser'
   gem 'busser-minitest'
   gem 'kitchen-vagrant'
