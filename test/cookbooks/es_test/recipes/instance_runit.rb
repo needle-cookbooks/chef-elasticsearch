@@ -1,3 +1,5 @@
+package 'openjdk-7-jre-headless'
+
 elasticsearch_instance 'es_test' do
   destination_dir '/opt/es'
   user 'elastic'
