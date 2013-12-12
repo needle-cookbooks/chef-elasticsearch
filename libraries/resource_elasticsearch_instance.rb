@@ -41,6 +41,10 @@ class Chef
       end
 
       def service_type(arg = nil)
+        if arg == 'runit'
+          @run_context.include_recipe('runit')
+        end
+
         set_or_return(:service_type, arg, kind_of: String, equal_to: %w(init runit), default: 'init')
       end
 

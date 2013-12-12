@@ -10,7 +10,6 @@ class Elasticsearch
       def initialize(new_resource, run_context = nil)
         @new_resource = new_resource
         @run_context = run_context
-        @run_context.include_recipe('runit')
       end
 
       def create
