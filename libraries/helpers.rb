@@ -3,16 +3,36 @@ require 'chef/resource'
 module Helpers
   module Elasticsearch
 
-    def elasticsearch_service(name)
-      "elasticsearch-#{ name }"
+    def elasticsearch_service(instance)
+      "elasticsearch-#{ instance.name }"
     end
 
-    def elasticsearch_conf_dir(dir, name)
-      ::File.join('', dir, name)
+    def elasticsearch_destination_dir(instance)
+      ::File.join('', instance.destination_dir, instance.name)
     end
 
-    def elasticsearch_config_file(dir, name)
-      ::File.join('', dir, "#{ name }.conf")
+    def elasticsearch_installation_dir(instance)
+      ::File.join('', elasticsearch_destination_dir(instance), instance.install_options[:version])
+    end
+
+    def elasticsearch_conf_dir(instance)
+      if instance.configuration_dir.nil?
+        ::File.join('', elasticsearch_destination_dir(instance), 'conf' )
+      else
+        instance.configuration_dir
+      end
+    end
+
+    def elasticsearch_conf_file(instance)
+      ::File.join('', elasticsearch_conf_dir(instance), "elasticsearch.json")
+    end
+
+    def elasticsearch_binary(instance)
+      ::File.join('', elasticsearch_installation_dir(instance), 'bin', 'elasticsearch')
+    end
+
+    def elasticsearch_env_vars_file(instance)
+      ::File.join('', elasticsearch_conf_dir(instance), 'elasticsearch.in.sh')
     end
 
     # FIXME. ? methods should return boolean.
@@ -21,10 +41,6 @@ module Helpers
     # @return [Array] configuration files in the directory.
     def elasticsearch_has_configs?(dir)
       ::Dir.glob(::File.join('', dir, '*.conf'))
-    end
-
-    def elasticsearch_jar_with_path(dir, version)
-      ::File.join('', dir, "elasticsearch_#{ version }.jar")
     end
 
     # Finds a resource if it exists in the collection.
