@@ -48,6 +48,9 @@ class Chef
         set_or_return(:service_type, arg, kind_of: String, equal_to: %w(init runit), default: 'init')
       end
 
+      def open_file_max(arg = nil)
+        set_or_return(:open_file_max, arg, kind_of: Fixnum)
+      end
     end
   end
 end
