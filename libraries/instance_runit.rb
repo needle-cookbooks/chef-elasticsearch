@@ -27,21 +27,24 @@ class Elasticsearch
     private
 
       def create_service_script
-        r = Chef::Resource::RunitService.new(elasticsearch_service(@new_resource.name), @run_context)
+        r = Chef::Resource::RunitService.new(elasticsearch_service(@new_resource), @run_context)
         r.cookbook          'elasticsearch'
         r.run_template_name 'elasticsearch'
         r.log_template_name 'elasticsearch'
         r.options({
-            :conf_dir => @new_resource.configuration_dir,
-            :name     => @new_resource.name,
-            :user     => @new_resource.user,
+            :name          => @new_resource.name,
+            :user          => @new_resource.user,
+            :bin_path      => elasticsearch_binary(@new_resource),
+            :config_path   => elasticsearch_conf_file(@new_resource),
+            :env_vars_file => elasticsearch_env_vars_file(@new_resource),
+            :open_file_max => @new_resource.open_file_max
           })
         r.run_action(:enable)
       end
 
       def enable_service
-        es_dir = elasticsearch_conf_dir(@new_resource.configuration_dir, @new_resource.name)
-        es_svc = elasticsearch_service(@new_resource.name)
+        es_dir = elasticsearch_conf_dir(@new_resource)
+        es_svc = elasticsearch_service(@new_resource)
 
         if ::File.directory?(es_dir)
           if elasticsearch_has_configs?(es_dir)
