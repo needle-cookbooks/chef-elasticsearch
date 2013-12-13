@@ -1,0 +1,14 @@
+#!/bin/sh
+
+exec 2>&1
+<% if @options[:open_file_max] -%>
+ulimit -n <%= @options[:open_file_max] %>
+<% end -%>
+
+if [ -f <%= @options[:env_vars_file] -%> ]; then
+  . <%= @options[:env_vars_file] %>
+fi
+
+ulimit -a
+
+chpst -u <%= @options[:user] %> <%= @options[:bin_path] %> -f
