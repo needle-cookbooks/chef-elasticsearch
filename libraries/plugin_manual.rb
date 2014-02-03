@@ -10,12 +10,16 @@ class Elasticsearch
         @plugin = @new_resource.plugin
         @plugin_res = set_plugin_resource
         @source_file_res = set_source_file_resource
+        @instance_plugin_dir_res = set_instance_plugin_dir_resource
         @plugin_dir_res = set_plugin_dir_resource
         @unzip_package_res = set_unzip_package_resource
+        @user = @instance.user
+        @group = @instance.group
       end
 
       def install
         manage_source_file(:create)
+        manage_instance_plugin_directory(:create)
         manage_plugin_directory(:create)
         manage_unzip_package(:install) if @install_options[:install_unzip]
         extract_plugin(:run)
@@ -35,6 +39,10 @@ class Elasticsearch
         Chef::Resource::RemoteFile.new(file_name, @run_context)
       end
 
+      def set_instance_plugin_dir_resource
+        Chef::Resource::Directory.new(instance_plugin_dir, @run_context)
+      end
+
       def set_plugin_dir_resource
         Chef::Resource::Directory.new(plugin_dir, @run_context)
       end
@@ -44,7 +52,7 @@ class Elasticsearch
       end
 
       def extract_plugin(run_action)
-        @plugin_res.user 'root'
+        @plugin_res.user @user
         @plugin_res.path %w(/bin /sbin /usr/bin /usr/sbin)
         @plugin_res.command plugin_unzip_command
         @plugin_res.creates plugin_install_creates
@@ -61,6 +69,15 @@ class Elasticsearch
         @source_file_res.group @group
         @source_file_res.mode 00644
         @source_file_res.run_action(action)
+      end
+
+      def manage_instance_plugin_directory(action)
+        @instance_plugin_dir_res.path instance_plugin_dir
+        @instance_plugin_dir_res.user @user
+        @instance_plugin_dir_res.group @group
+        @instance_plugin_dir_res.recursive true
+        @instance_plugin_dir_res.mode 00755
+        @instance_plugin_dir_res.run_action(action)
       end
 
       def manage_plugin_directory(action)

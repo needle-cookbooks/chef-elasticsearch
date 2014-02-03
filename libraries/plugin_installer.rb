@@ -22,10 +22,14 @@ class Elasticsearch
         @version = @new_resource.install_options[:version]
         @install_options = @new_resource.install_options
         @plugin = @new_resource.plugin
+        @instance_plugin_dir_res = set_instance_plugin_dir_resource
         @plugin_res = set_plugin_resource
+        @user = @instance.user
+        @group = @instance.group
       end
 
       def install
+        manage_instance_plugin_directory(:create)
         manage_plugin_install('install', :run)
       end
 
@@ -35,12 +39,25 @@ class Elasticsearch
 
       private
 
+      def set_instance_plugin_dir_resource
+        Chef::Resource::Directory.new(instance_plugin_dir, @run_context)
+      end
+
       def set_plugin_resource
         Chef::Resource::Execute.new(@plugin, @run_context)
       end
 
+      def manage_instance_plugin_directory(action)
+        @instance_plugin_dir_res.path instance_plugin_dir
+        @instance_plugin_dir_res.user @user
+        @instance_plugin_dir_res.group @group
+        @instance_plugin_dir_res.recursive true
+        @instance_plugin_dir_res.mode 00755
+        @instance_plugin_dir_res.run_action(action)
+      end
+
       def manage_plugin_install(inst_action, run_action)
-        @plugin_res.user @instance.user
+        @plugin_res.user @user
         @plugin_res.path %w(/bin /sbin /usr/bin /usr/sbin)
         @plugin_res.command plugin_manage_command(inst_action)
         @plugin_res.creates plugin_install_creates
